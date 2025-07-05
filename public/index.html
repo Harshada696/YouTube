@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Video Upload</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin-bottom: 20px;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #response {
+      margin-top: 20px;
+    }
+    video {
+      width: 100%;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Upload a Video</h1>
+  <form id="uploadForm">
+    <label>Title</label>
+    <input type="text" name="title" required />
+
+    <label>Email</label>
+    <input type="email" name="userEmail" required />
+
+    <label>Select Video</label>
+    <input type="file" name="video" accept="video/*" required />
+
+    <button type="submit">Upload</button>
+  </form>
+
+  <div id="response"></div>
+
+  <script>
+    const form = document.getElementById("uploadForm");
+    const responseDiv = document.getElementById("response");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      try {
+        const res = await fetch("http://localhost:5000/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          responseDiv.innerHTML = `
+            <p><strong>Uploaded Successfully!</strong></p>
+            <video controls src="${data.videoUrl}"></video>
+          `;
+        } else {
+          responseDiv.innerHTML = `<p style="color: red;">Upload failed. ${data.error || ""}</p>`;
+        }
+      } catch (error) {
+        console.error(error);
+        responseDiv.innerHTML = `<p style="color: red;">Something went wrong.</p>`;
+      }
+    });
+  </script>
+
+</body>
+</html>
