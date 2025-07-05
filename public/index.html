@@ -1,41 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Video Uploader</title>
+  <title>Upload Video</title>
 </head>
 <body>
-  <h1>Upload a Video</h1>
-  <form id="uploadForm" enctype="multipart/form-data">
-    <input type="text" name="title" placeholder="Video Title" required /><br><br>
-    <input type="email" name="userEmail" placeholder="Your Email" required /><br><br>
-    <input type="file" name="video" accept="video/*" required /><br><br>
+  <h2>Upload a Video</h2>
+  <form id="uploadForm">
+    <input type="text" name="title" placeholder="Title" required><br><br>
+    <input type="email" name="userEmail" placeholder="Email" required><br><br>
+    <input type="file" name="video" accept="video/*" required><br><br>
     <button type="submit">Upload</button>
   </form>
 
-  <p id="response"></p>
+  <p id="message"></p>
 
   <script>
     const form = document.getElementById("uploadForm");
-    const responseEl = document.getElementById("response");
+    const message = document.getElementById("message");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(form);
 
       try {
-        const res = await fetch("/upload", {
+        const response = await fetch("http://localhost:5000/upload", {
           method: "POST",
           body: formData,
         });
-        const data = await res.json();
+
+        const data = await response.json();
+
         if (data.success) {
-          responseEl.textContent = "Uploaded: " + data.videoUrl;
+          message.innerText = "✅ Upload successful!";
+          console.log("Video URL:", data.videoUrl);
         } else {
-          responseEl.textContent = "Upload failed.";
+          message.innerText = "❌ Upload failed.";
         }
       } catch (err) {
-        responseEl.textContent = "Error uploading.";
+        console.error(err);
+        message.innerText = "❌ Error uploading.";
       }
     });
   </script>
